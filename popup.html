@@ -1,0 +1,270 @@
+<!--
+  文件名: popup.html
+  描述: Chrome截图插件的弹出窗口界面
+  功能:
+  1. 提供截取整个页面的按钮
+  2. 提供截取选定区域的按钮
+  3. 提供图片格式选择（JPG/PDF）
+  4. 美化的UI界面，包括圆角、阴影和动画效果
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* 全局样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    :root {
+      --ios-blue: #007AFF;
+      --ios-gray: #8E8E93;
+      --ios-light-gray: #F2F2F7;
+      --ios-border: #C5C5C7;
+    }
+
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #FFFFFF;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    /* 容器样式 */
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: #FFFFFF;
+      padding: 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    /* 标题样式 */
+    h2 {
+      margin: 0 0 20px 0;
+      color: #000000;
+      font-size: 22px;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: -0.02em;
+    }
+
+    /* 按钮容器 */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 按钮基础样式 */
+    button {
+      padding: 12px 20px;
+      background-color: var(--ios-blue);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 按钮悬停效果 */
+    button:hover {
+      opacity: 0.9;
+      transform: scale(0.98);
+    }
+
+    /* 按钮点击效果 */
+    button:active {
+      opacity: 0.7;
+      transform: scale(0.96);
+    }
+
+    /* 按钮图标 */
+    button i {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* 格式选择区域样式 */
+    .format-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .format-label {
+      color: var(--ios-gray);
+      font-size: 15px;
+      font-weight: 500;
+      margin-left: 4px;
+      margin-bottom: 4px;
+    }
+
+    .format-options {
+      display: flex;
+      background: var(--ios-light-gray);
+      border-radius: 16px;
+      padding: 4px;
+      position: relative;
+    }
+
+    /* 单选框容器 */
+    .radio-container {
+      position: relative;
+      flex: 1;
+      z-index: 1;
+    }
+
+    /* 单选框标签样式 */
+    .radio-container label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      color: var(--ios-gray);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      user-select: none;
+    }
+
+    /* 单选框自定义样式 */
+    .radio-container input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    /* 选中状态样式 */
+    .radio-container input[type="radio"]:checked + label {
+      color: #FFFFFF;
+      background: var(--ios-blue);
+    }
+
+    /* 提示文本 */
+    .tip {
+      font-size: 13px;
+      color: var(--ios-gray);
+      text-align: center;
+      padding: 12px;
+      background: var(--ios-light-gray);
+      border-radius: 12px;
+      line-height: 1.4;
+    }
+
+    /* 动画效果 */
+    @keyframes slideUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(10px);
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* iOS风格的滑动选择器背景 */
+    .format-options::before {
+      content: '';
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      right: 4px;
+      bottom: 4px;
+      background: var(--ios-blue);
+      border-radius: 12px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 0;
+    }
+
+    /* 响应式触摸效果 */
+    @media (hover: hover) {
+      button:hover {
+        opacity: 0.9;
+      }
+    }
+
+    /* iOS风格的深色模式支持 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #000000;
+      }
+      
+      .container {
+        background: #1C1C1E;
+      }
+
+      h2 {
+        color: #FFFFFF;
+      }
+
+      .format-options {
+        background: #2C2C2E;
+      }
+
+      .tip {
+        background: #2C2C2E;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>网页截图工具</h2>
+    <div class="button-group">
+      <button id="captureFullPage">
+        <i>📷</i>
+        <span>截取整个页面</span>
+      </button>
+      <button id="captureSelection">
+        <i>✂️</i>
+        <span>截取选定区域</span>
+      </button>
+    </div>
+    <div class="format-section">
+      <div class="format-label">保存为</div>
+      <div class="format-options">
+        <div class="radio-container">
+          <input type="radio" id="jpg" name="format" value="jpg" checked>
+          <label for="jpg">JPG</label>
+        </div>
+        <div class="radio-container">
+          <input type="radio" id="pdf" name="format" value="pdf">
+          <label for="pdf">PDF</label>
+        </div>
+      </div>
+    </div>
+    <div class="tip">
+      <span>按 ESC 键可取消选择</span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
